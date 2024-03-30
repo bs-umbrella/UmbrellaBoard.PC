@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/bsmg/BSIPA-MetadataFileSchema/master/Schema.json",
+  "id": "UmbrellaBoard",
+  "name": "UmbrellaBoard",
+  "author": "",
+  "version": "0.0.1",
+  "description": "",
+  "gameVersion": "1.35.0",
+  "dependsOn": {
+    "BSIPA": "^4.3.3",
+    "BeatSaberMarkupLanguage": "^1.9.2",
+    "SiraUtil": "^3.1.7"
+  }
+}
