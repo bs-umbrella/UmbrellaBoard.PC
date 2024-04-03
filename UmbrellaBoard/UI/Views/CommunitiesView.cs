@@ -215,6 +215,9 @@ namespace UmbrellaBoard.UI.Views
                 cell._mask.type = Image.Type.Sliced;
                 cell._mask.color = Color.white;
                 cell._mask.material = Utilities.ImageResources.NoGlowMat;
+
+                cell._mask.raycastTarget = false;
+                cell._communityName.raycastTarget = false;
                 cell._communityBackground.raycastTarget = false;
 
                 return cell;
