@@ -143,7 +143,6 @@
     <Compile Include="Installers\AppInstaller.cs" />
     <Compile Include="Installers\MenuInstaller.cs" />
     <Compile Include="LoadingControl.cs" />
-    <Compile Include="Models\CommunityCell.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Carousel\Carousel.cs" />

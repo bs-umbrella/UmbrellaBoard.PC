@@ -164,7 +164,7 @@ namespace UmbrellaBoard.UI.Views
                 var cell = tableView.DequeueReusableCellForIdentifier(ReuseIdentifier) as CommunityConfigurationCell;
                 if (cell == null)
                 {
-                    cell = CommunityConfigurationCell.MakeCell();
+                    cell = CommunityConfigurationCell.GetCell();
                     cell.reuseIdentifier = ReuseIdentifier;
                     cell.CommunityMovedCallback = CommunityMoved.Invoke;
                     cell.interactable = false;
@@ -207,7 +207,7 @@ namespace UmbrellaBoard.UI.Views
             Transform _moveButtons;
 
             public Action<CommunityConfigurationCell, MoveDirection> CommunityMovedCallback { get; internal set; }
-            public static CommunityConfigurationCell MakeCell()
+            public static CommunityConfigurationCell GetCell()
             {
                 var go = new GameObject("CommunityConfigurationCell");
                 go.AddComponent<Touchable>();
