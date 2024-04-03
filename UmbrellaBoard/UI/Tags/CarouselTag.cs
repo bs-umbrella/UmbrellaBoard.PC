@@ -10,7 +10,7 @@ namespace UmbrellaBoard.UI.Tags
 {
     internal class CarouselTag : BSMLTag
     {
-        public override string[] Aliases => throw new NotImplementedException();
+        public override string[] Aliases => new []{ "carousel", "bubble-carousel" };
 
         public override GameObject CreateObject(Transform parent)
         {

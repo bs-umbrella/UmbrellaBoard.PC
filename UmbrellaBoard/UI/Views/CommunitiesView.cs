@@ -47,8 +47,8 @@ namespace UmbrellaBoard.UI.Views
             BSMLParser.instance.Parse(content, gameObject, this);
 
             rectTransform.sizeDelta = new Vector2(24, 60);
-            rectTransform.anchorMax = new Vector2(.5f, 0);
-            rectTransform.anchorMin = new Vector2(.5f, 1);
+            rectTransform.anchorMin = new Vector2(.5f, 0);
+            rectTransform.anchorMax = new Vector2(.5f, 1);
             
             _loadingControl = gameObject.AddComponent<LoadingControl>();
 
