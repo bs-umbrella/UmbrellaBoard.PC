@@ -1,0 +1,10 @@
+﻿<stack 
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'
+	pref-width='20' pref-height='10' vertical-fit='PreferredSize' horizontal-fit='PreferredSize'>
+	<!-- viewport -->
+	<img id='mask' src='#RoundRect10'>
+		<img id='community-background' preserve-aspect='true'/>
+		<text id='community-name' font-size='3' font-align='Center' />
+	</img>
+</stack>

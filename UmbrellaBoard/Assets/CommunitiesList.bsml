@@ -1,7 +1,8 @@
 ﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
 	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'
+	id='content-parent'
 	>
 	<vertical pref-height='60' pref-width='24' vertical-fit='PreferredSize' horizontal-fit='PreferredSize' bg-alpha='0.8' bg='round-rect-panel' pad='2'>
-		<list id='_bsmlCommunityList' pref-height='60' pref-width='20' list-width='20' select-cell='HandleCommunitySelected'/>
+		<list id='community-list' pref-height='60' pref-width='20' list-width='20' select-cell='community-selected'/>
 	</vertical>
 </bg>

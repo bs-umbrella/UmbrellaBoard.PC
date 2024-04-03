@@ -9,17 +9,19 @@ using UnityEngine.Networking;
 
 namespace UmbrellaBoard
 {
-    internal struct Response
+    internal struct Response<T>
     {
         internal int httpCode;
-        internal object content;
+        internal T content;
+
+        public bool Valid => httpCode >= 200 && httpCode < 300 && content != null;
     }
 
     internal class DownloaderUtility
     {
-        internal Response GetData(string url, Dictionary<string, string> headers)
+        internal Response<byte[]> GetData(string url, Dictionary<string, string> headers)
         {
-            Response response = new();
+            var response = new Response<byte[]>();
 
             if (url.StartsWith("file://"))
             {
@@ -27,7 +29,7 @@ namespace UmbrellaBoard
                 if (File.Exists(path))
                 {
                     response.httpCode = 200;
-                    response.content = File.ReadAllText(path);
+                    response.content = File.ReadAllBytes(path);
                 }
                 else
                 {
@@ -48,7 +50,7 @@ namespace UmbrellaBoard
             if (uwr.result != UnityWebRequest.Result.ProtocolError && uwr.result != UnityWebRequest.Result.ConnectionError)
             {
                 response.httpCode = 200;
-                response.content = uwr.downloadHandler.text;
+                response.content = uwr.downloadHandler.data;
             }
             else
             {
@@ -59,10 +61,10 @@ namespace UmbrellaBoard
             return response;
         }
 
-        internal Response GetJson(string url, Dictionary<string, string> headers)
+        internal Response<JObject> GetJson(string url, Dictionary<string, string> headers)
         {
-            Response data = GetData(url, headers);
-            Response output = new()
+            var data = GetString(url, headers);
+            Response<JObject> output = new()
             {
                 content = null,
                 httpCode = data.httpCode
@@ -72,16 +74,14 @@ namespace UmbrellaBoard
             if (data.content == null)
                 return output;
 
-            if (data.content is string)
-                output.content = JObject.Parse((string) data.content);
-
+            output.content = JObject.Parse(data.content);
             return output;
         }
 
-        internal Response GetString(string url, Dictionary<string, string> headers = null)
+        internal Response<string> GetString(string url, Dictionary<string, string> headers = null)
         {
-            Response data = GetData(url, headers);
-            Response output = new()
+            var data = GetData(url, headers);
+            Response<string> output = new()
             {
                 content = null,
                 httpCode = data.httpCode
@@ -90,7 +90,7 @@ namespace UmbrellaBoard
             if (data.content == null)
                 return output;
 
-            output.content = (string) data.content;
+            output.content = System.Text.Encoding.Default.GetString(data.content);
             return output;
         }
     }

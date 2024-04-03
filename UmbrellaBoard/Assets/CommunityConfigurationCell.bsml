@@ -1,0 +1,19 @@
+﻿<horizontal 
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'
+	id='layout'
+	pref-width='45'
+	bg='round-rect-panel'
+	pref-height='12'
+	>
+	<page-button id='enable-button' direction='Left' on-click='move-left' pref-height='6'/>
+	<img id='mask' src='#RoundRect10' pref-width='24'>
+		<img id='community-background' preserve-aspect='true'/>
+		<text id='community-name' font-size='3' font-align='Center'/>
+	</img>
+	<vertical id='move-buttons' pref-width='6'>
+		<page-button id='up-button' direction='Up' on-click='move-up' pref-width='6'/>
+		<page-button id='down-button' direction='Down' on-click='move-down' pref-width='6'/>
+	</vertical>
+	<page-button id='disable-button' direction='Right' on-click='move-right' pref-height='6'/>
+</horizontal>

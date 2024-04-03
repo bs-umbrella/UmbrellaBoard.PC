@@ -7,15 +7,27 @@ namespace UmbrellaBoard
 {
     internal class Config
     {
-        internal string communitiesDiscoveryURL = "";
-        internal List<Community> enabledCommunities;
-        internal List<Community> disabledCommunities;
+        public string communitiesDiscoveryURL = "file://S:\\Program Files (x86)\\Steam\\steamapps\\common\\Beat Saber\\UserData\\UmbrellaBoard\\communities.json";
+
+        public List<Community> _enabledCommunities = new();
+        public List<Community> EnabledCommunities 
+        {
+            get => _enabledCommunities ?? (_enabledCommunities = new());
+            private set => _enabledCommunities = value;
+        }
+
+        public List<Community> _disabledCommunities = new();
+        public List<Community> DisabledCommunities 
+        { 
+            get => _disabledCommunities ?? (_disabledCommunities = new());
+            private set => _disabledCommunities = value;
+        }
     }
 
     struct Community
     {
-        internal string communityName;
-        internal string communityBackgroundURL;
-        internal string communityPageURL;
+        public string communityName;
+        public string communityBackgroundURL;
+        public string communityPageURL;
     }
 }

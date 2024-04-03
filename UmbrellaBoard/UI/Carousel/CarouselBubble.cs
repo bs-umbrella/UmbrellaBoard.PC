@@ -10,51 +10,54 @@ namespace UmbrellaBoard.UI.Carousel
 {
     internal class CarouselBubble : MonoBehaviour
     {
+        ImageView _image;
         internal ImageView Image 
         { 
             get
             {
-                if (!Image)
-                    Image = GetComponentInChildren<ImageView>(true);
-                return Image;
+                if (_image == null) _image = GetComponentInChildren<ImageView>(true);
+                return _image;
             }
-            private set { Image = value; }
+            private set { _image = value; }
         }
+
+        bool _highlighted;
         internal bool Highlighted
         {
-            get => Highlighted;
+            get => _highlighted;
             set
             {
-                Highlighted = value;
+                _highlighted = value;
                 UpdateHighlight();
             }
         }
 
+        Color _highlighColor = Color.white;
         internal Color HighlightColour
         {
-            get => HighlightColour;
+            get => _highlighColor;
             set 
             { 
-                HighlightColour = value; 
+                _highlighColor = value; 
                 UpdateHighlight(); 
             }
         }
 
+        Color _defaultColor = Color.gray;
         internal Color DefaultColour
         {
-            get => DefaultColour;
+            get => _defaultColor;
             set
             {
-                DefaultColour = value;
+                _defaultColor = value;
                 UpdateHighlight();
             }
         }
 
-
         internal void UpdateHighlight()
         {
-            image.color = highlighted ? highlightColour : defaultColour;
-            image.transform.localScale = highlighted ? new Vector3(1, 1, 1) : new Vector3(.5f, .5f, .5f);
+            Image.color = Highlighted ? HighlightColour : DefaultColour;
+            Image.transform.localScale = Highlighted ? new Vector3(1, 1, 1) : new Vector3(.5f, .5f, .5f);
         }
     }
 }

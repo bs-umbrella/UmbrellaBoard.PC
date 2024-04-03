@@ -8,8 +8,8 @@ namespace UmbrellaBoard.Installers
     {
         public override void InstallBindings()
         {
-            Container.Bind<MainFlowCoordinatorPatch>().AsSingle();
-            Container.Bind<FlowCoordinatorPatch>().AsSingle();
+            Container.BindInterfacesAndSelfTo<MainFlowCoordinatorPatch>().AsSingle().NonLazy();
+            Container.BindInterfacesAndSelfTo<FlowCoordinatorPatch>().AsSingle().NonLazy();
         }
     }
 }

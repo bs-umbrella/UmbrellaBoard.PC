@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BeatSaberMarkupLanguage.Attributes;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,21 +8,30 @@ namespace UmbrellaBoard.UI.Carousel
 {
     internal class Carousel : MonoBehaviour
     {
+        [UIComponent("next-button")]
         internal Button _nextButton;
+        [UIComponent("prev-button")]
         internal Button _prevButton;
+
+        [UIComponent("bubble-prefab")]
+        internal GameObject _bubblePrefab;
+
         internal VerticalLayoutGroup _carouselLayoutGroup;
         internal LayoutElement _carouselLayoutElement;
+
+        internal Transform _ticker;
         internal HorizontalLayoutGroup _tickerLayoutGroup;
         internal ContentSizeFitter _tickerSizeFitter;
+
+        internal RectTransform _content;
         internal HorizontalLayoutGroup _contentLayoutGroup;
         internal ContentSizeFitter _contentSizeFitter;
-        internal Transform _ticker;
-        internal GameObject _bubblePrefab;
-        internal List<CarouselBubble> _carouselBubbles;
-        internal List<CanvasGroup> _carouselCanvasGroups;
-        internal RectTransform _content;
+
         internal RectTransform _viewPort;
         internal HoverDetection _viewPortHoverDetection;
+
+        internal List<CarouselBubble> _carouselBubbles;
+        internal List<CanvasGroup> _carouselCanvasGroups;
 
         internal event Action<Carousel, int> ActiveChildChanged;
         internal int CurrentChildIndex { get; set; }
@@ -34,28 +44,22 @@ namespace UmbrellaBoard.UI.Carousel
         internal bool PauseOnHover { get; set; }
         internal float InactiveAlpha { get; set; }
 
-        internal bool NextItem()
-        {
+        [UIAction("next")]
+        internal bool NextItem() => Next();
 
-        }
+        [UIAction("previous")]
+        internal bool PreviousItem() => Previous();
 
-        internal bool PreviousItem()
-        {
+        internal void Skip() => AdvanceWithTimer();
 
-        }
-
-        internal void Skip()
-        {
-
-        }
         internal bool Next(bool animated = true)
         {
-
+            return false;
         }
 
-        internal bool Preview(bool animated = true)
+        internal bool Previous(bool animated = true)
         {
-
+            return false;
         }
 
         internal void SetCurrentlyActiveChildIndex(int index, bool animated = true)
@@ -84,6 +88,11 @@ namespace UmbrellaBoard.UI.Carousel
         }
 
         private void OnEnable()
+        {
+
+        }
+
+        private void AdvanceWithTimer()
         {
 
         }

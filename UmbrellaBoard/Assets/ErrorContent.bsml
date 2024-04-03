@@ -1,7 +1,8 @@
-﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+﻿<bg id='error-content'
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
 	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'
 	>
 	<vertical pref-height='10' vertical-fit='PreferredSize' pref-width='30'>
-        <text id='_errorText' text='An error ocurred while downloading content...'/>
+        <text id='error-text' text='An error ocurred while downloading content...'/>
     </vertical>
 </bg>

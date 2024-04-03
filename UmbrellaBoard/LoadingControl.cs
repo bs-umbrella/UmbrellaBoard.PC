@@ -9,10 +9,19 @@ namespace UmbrellaBoard
 {
     internal class LoadingControl : MonoBehaviour
     {
-        private GameObject _loadingContent;
-        [UIValue("_loadingText")] private TextMeshProUGUI _loadingText;
-        private GameObject _errorContent;
-        [UIValue("_errorText")] private TextMeshProUGUI _errorText;
+        [UIComponent("loading-content")]
+        private Transform _loadingContent;
+        private GameObject LoadingContent => _loadingContent.gameObject;
+        
+        [UIComponent("loading-text")] 
+        private TextMeshProUGUI _loadingText;
+        
+        [UIComponent("error-content")]
+        private Transform _errorContent;
+        private GameObject ErrorContent => _errorContent.gameObject;
+        
+        [UIComponent("_errorText")] 
+        private TextMeshProUGUI _errorText;
 
         private void Awake()
         {
@@ -21,6 +30,7 @@ namespace UmbrellaBoard
 
             BSMLParser.instance.Parse(loadingContent, gameObject, this);
             BSMLParser.instance.Parse(errorContent, gameObject, this);
+            ShowLoading(false);
         }
 
         internal void ShowLoading(bool isLoading, string loadingText = "")
@@ -29,8 +39,8 @@ namespace UmbrellaBoard
                 loadingText = "Loading...";
 
             _loadingText.text = loadingText;
-            _loadingContent.SetActive(isLoading);
-            _errorContent.SetActive(false);
+            LoadingContent.SetActive(isLoading);
+            ErrorContent.SetActive(false);
         }
 
         internal void ShowError(string errorText = "")
@@ -39,8 +49,8 @@ namespace UmbrellaBoard
                 errorText = "An error occurred!";
 
             _errorText.text = errorText;
-            _loadingContent.SetActive(false);
-            _errorContent.SetActive(true);
+            LoadingContent.SetActive(false);
+            ErrorContent.SetActive(true);
         }
     }
 }

@@ -1,8 +1,9 @@
-﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+﻿<bg id='loading-content'
+	xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
 	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'
 	>
 	<vertical min-height='40' vertical-fit='MinSize'>
-		<text id='_loadingText' text='Umbrella Board Loading...' font-size='6'/>
+		<text id='loading-text' text='Umbrella Board Loading...' font-size='6'/>
 		<stack pref-width='20' pref-height='20'>
 			<loading-indicator preserve-aspect='true'/>
 		</stack>

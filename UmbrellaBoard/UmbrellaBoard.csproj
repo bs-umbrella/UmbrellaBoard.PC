@@ -154,18 +154,22 @@
     <Compile Include="UI\Tags\OpenPageTag.cs" />
     <Compile Include="UI\TypeHandlers\CarouselHandler.cs" />
     <Compile Include="UI\TypeHandlers\PageOpenerHandler.cs" />
-    <Compile Include="Views\CommunitiesView.cs" />
-    <Compile Include="Views\PageView.cs" />
+    <Compile Include="UI\Views\CommunitiesView.cs" />
+    <Compile Include="UI\Views\CommunityConfigurationView.cs" />
+    <Compile Include="UI\Views\PageView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\CommunitiesList.bsml" />
-    <None Include="Assets\ErrorContent.bsml" />
-    <None Include="Assets\HeaderContent.bsml" />
-    <None Include="Assets\LoadingContent.bsml" />
-    <None Include="Assets\PlaceholderView.bsml" />
+    <EmbeddedResource Include="Assets\CommunitiesList.bsml" />
+    <EmbeddedResource Include="Assets\ErrorContent.bsml" />
+    <EmbeddedResource Include="Assets\HeaderContent.bsml" />
+    <EmbeddedResource Include="Assets\LoadingContent.bsml" />
+    <EmbeddedResource Include="Assets\PlaceholderView.bsml" />
+    <EmbeddedResource Include="Assets\CommunityConfigurationCell.bsml" />
+    <EmbeddedResource Include="Assets\CommunityConfigurationView.bsml" />
+    <EmbeddedResource Include="Assets\CommunityCell.bsml" />
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
     <None Include="UmbrellaBoard.csproj.user" Condition="Exists('UmbrellaBoard.csproj.user')" />
   </ItemGroup>
