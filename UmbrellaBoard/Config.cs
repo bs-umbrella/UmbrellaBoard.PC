@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
+using IPA.Config.Stores.Attributes;
+using IPA.Config.Stores.Converters;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace UmbrellaBoard
@@ -9,19 +11,11 @@ namespace UmbrellaBoard
     {
         public string communitiesDiscoveryURL = "file://S:\\Program Files (x86)\\Steam\\steamapps\\common\\Beat Saber\\UserData\\UmbrellaBoard\\communities.json";
 
-        public List<Community> _enabledCommunities = new();
-        public List<Community> EnabledCommunities 
-        {
-            get => _enabledCommunities ?? (_enabledCommunities = new());
-            private set => _enabledCommunities = value;
-        }
+        [UseConverter(typeof(ListConverter<Community>))]
+        public List<Community> enabledCommunities = new();
 
-        public List<Community> _disabledCommunities = new();
-        public List<Community> DisabledCommunities 
-        { 
-            get => _disabledCommunities ?? (_disabledCommunities = new());
-            private set => _disabledCommunities = value;
-        }
+        [UseConverter(typeof(ListConverter<Community>))]
+        public List<Community> disabledCommunities = new();
     }
 
     struct Community
