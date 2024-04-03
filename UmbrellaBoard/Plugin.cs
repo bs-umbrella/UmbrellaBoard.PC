@@ -3,6 +3,8 @@ using IPALogger = IPA.Logging.Logger;
 using IPAConfig = IPA.Config.Config;
 using SiraUtil.Zenject;
 using UmbrellaBoard.Installers;
+using UmbrellaBoard.UI.Tags;
+
 using IPA.Config.Stores;
 using Zenject;
 
@@ -15,6 +17,15 @@ namespace UmbrellaBoard
         public Plugin(IPALogger logger, IPAConfig ipaConfig, Zenjector zenjector)
         {
             Config config = ipaConfig.Generated<Config>();
+
+            // register our tags
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new CarouselTag());
+
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPageButtonTag());
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPageClickableImageTag());
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPageClickableText());
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPagePageButtonTag());
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPagePrimaryButtonTag());
 
             zenjector.UseLogger(logger);
             zenjector.Install<MenuInstaller>(Location.Menu);
