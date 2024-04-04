@@ -2,6 +2,7 @@
 using HMUI;
 using System;
 using System.Reflection;
+using System.Linq;
 using TMPro;
 using UmbrellaBoard.UI.Views;
 using UnityEngine;
@@ -11,6 +12,7 @@ using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using UnityEngine.UI;
 
 namespace UmbrellaBoard
 {
@@ -29,6 +31,8 @@ namespace UmbrellaBoard
 
         [UIComponent("header-content")]
         private Transform _headerContent;
+        [UIComponent("header-bg")]
+        private HorizontalLayoutGroup _headerBG;
         [UIComponent("nav-buttons")]
         private Transform _navButtons;
         [UIComponent("header-text")]
@@ -57,7 +61,49 @@ namespace UmbrellaBoard
         }
 
         [UIAction("#post-parse")]
-        void PostParse() => _navButtons.GetChild(0).eulerAngles = new Vector3(0, 0, -90);
+        void PostParse()
+        {
+            var titleImage = Resources.FindObjectsOfTypeAll<ImageView>().FirstOrDefault(x => x != null && x.sprite?.name == "RoundRect10" && x.transform.parent?.name == "TitleViewController" && x.gameObject.name == "BG");
+            if (titleImage != null)
+            {
+                var bg = _headerBG.GetComponent<Backgroundable>();
+                var img = bg.background as ImageView;
+
+                img.sprite = titleImage.sprite;
+                img.gradient = true;
+                img.material = titleImage.material;
+                img.color = Color.white;
+                // ff69b4ff
+                img.color0 = new Color(1f, 0.4f, 0.7f, 1.0f);
+                img.color1 = new Color(1f, 0.4f, 0.7f, 0.0f);
+
+                img._gradientDirection = titleImage._gradientDirection;
+                img._flipGradientColors = titleImage._flipGradientColors;
+                img._skew = titleImage._skew;
+                img.alphaHitTestMinimumThreshold = titleImage.alphaHitTestMinimumThreshold;
+                img.fillAmount = titleImage.fillAmount;
+                img.fillCenter = titleImage.fillCenter;
+                img.fillClockwise = titleImage.fillClockwise;
+                img.fillMethod = titleImage.fillMethod;
+                img.fillOrigin = titleImage.fillOrigin;
+                img.hideFlags = titleImage.hideFlags;
+                img.maskable = titleImage.maskable;
+                img.material = titleImage.material;
+                img.onCullStateChanged = titleImage.onCullStateChanged;
+                img.overrideSprite = titleImage.overrideSprite;
+                img.pixelsPerUnitMultiplier = titleImage.pixelsPerUnitMultiplier;
+                img.preserveAspect = titleImage.preserveAspect;
+                img.raycastTarget = titleImage.raycastTarget;
+                img.sprite = titleImage.sprite;
+                img.tag = titleImage.tag;
+                img.type = titleImage.type;
+                img.useGUILayout = titleImage.useGUILayout;
+                img.useSpriteMesh = titleImage.useSpriteMesh;
+            }
+
+            _navButtons.GetChild(0).eulerAngles = new Vector3(0, 0, -90);
+
+        }
 
         [UIAction("discover-communities")]
         internal void DiscoverCommunities()

@@ -3,7 +3,7 @@
 	id='header-content'
 	anchor-pos-y='40'
 	>
-	<horizontal pref-height='14' pref-width='120' bg='round-rect-panel' bg-color0='#ff69b4ff' bg-color1='#ff69b400' child-expand-height='false' child-align='MiddleCenter'>
+	<horizontal id='header-bg' pref-height='14' pref-width='120' bg='round-rect-panel' bg-color0='#ff69b4ff' bg-color1='#ff69b400' child-expand-height='false' child-align='MiddleCenter'>
 		<text id='header-text' text='Umbrella Board' font-size='10' font-align='Center'/>
 	</horizontal>
 	<horizontal id='nav-buttons' min-height='8' pref-width='22' vertical-fit='MinSize' horizontal-fit='PreferredSize' child-control-height='false' spacing='2' anchor-pos-x='-45'>
