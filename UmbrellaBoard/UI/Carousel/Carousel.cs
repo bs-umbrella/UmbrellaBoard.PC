@@ -460,24 +460,17 @@ namespace UmbrellaBoard.UI.Carousel
             switch (Alignment)
             {
                 case CarouselAlignment.Beginning:
-                    { // to get beginning we have to subtract half the childrect sizes
-                        targetPos.x -= childRect.width * 0.5f;
-                        targetPos.y -= childRect.height * 0.5f;
-                    }
+                    // to get beginning we have to subtract half the childrect sizes
+                    targetPos -= childRect.size * 0.5f;
                     break;
                 case CarouselAlignment.Center:
-                    { // to get center we just subtract half the viewport size
-                        targetPos.x -= viewPortRect.width * 0.5f;
-                        targetPos.y -= viewPortRect.height * 0.5f;
-                    }
+                    // to get center we just subtract half the viewport size
+                    targetPos -= viewPortRect.size * 0.5f;
                     break;
                 case CarouselAlignment.End:
-                    { // to get end we add have to add half the childrect sizes and subtract the entire viewport rect
-                        targetPos.x += childRect.width * 0.5f;
-                        targetPos.x -= viewPortRect.width;
-                        targetPos.y += childRect.height * 0.5f;
-                        targetPos.y -= viewPortRect.height;
-                    }
+                    // to get end we add have to add half the childrect sizes and subtract the entire viewport rect
+                    targetPos += childRect.size * 0.5f;
+                    targetPos -= viewPortRect.size;
                     break;
             }
 
@@ -485,16 +478,10 @@ namespace UmbrellaBoard.UI.Carousel
             switch (Direction)
             {
                 case CarouselDirection.Horizontal:
-                    {
-                        targetPos.y = 0;
-                        targetPos.x = -1;
-                    }
+                    targetPos *= new Vector2(-1, 0);
                     break;
                 case CarouselDirection.Vertical:
-                    {
-                        targetPos.x = 0;
-                        targetPos.y = -1;
-                    }
+                    targetPos *= new Vector2(0, -1);
                     break;
             }
 
@@ -511,9 +498,9 @@ namespace UmbrellaBoard.UI.Carousel
                 for (var t = 0.0f; t < 1.0f; t += Time.deltaTime * 5.0f)
                 {
                     float eased = eased_t(t);
-                    _content.anchoredPosition = lerp(currentPos, targetPos, eased);
-                    oldCanvasGroup.alpha = lerp(oldAlpha, InactiveAlpha, eased);
-                    newCanvasGroup.alpha = lerp(newAlpha, 1.0f, eased);
+                    _content.anchoredPosition = Vector2.Lerp(currentPos, targetPos, eased);
+                    oldCanvasGroup.alpha = Mathf.Lerp(oldAlpha, InactiveAlpha, eased);
+                    newCanvasGroup.alpha = Mathf.Lerp(newAlpha, 1.0f, eased);
                     yield return null;
                 }
             }
@@ -554,7 +541,6 @@ namespace UmbrellaBoard.UI.Carousel
         private float ease_out(float t) { return flip(square(flip(t))); }
         private float lerp(float a, float b, float t) { return a + (b - a) * t; }
         private float eased_t(float t) { return lerp(ease_in(t), ease_out(t), t); }
-        private Vector2 lerp(Vector2 a, Vector2 b, float t) { return new Vector2(lerp(a.x, b.x, t), lerp(a.y, b.y, t)); }
 
         internal enum CarouselTimerBehaviour
         {
