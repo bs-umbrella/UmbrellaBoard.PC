@@ -134,6 +134,7 @@
     <Compile Include="LoadingControl.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpriteCache.cs" />
     <Compile Include="UI\Carousel\Carousel.cs" />
     <Compile Include="UI\Carousel\CarouselBubble.cs" />
     <Compile Include="UI\Carousel\HoverDetection.cs" />
