@@ -3,13 +3,15 @@ using System.Runtime.CompilerServices;
 using IPA.Config.Stores;
 using IPA.Config.Stores.Attributes;
 using IPA.Config.Stores.Converters;
+using IPA.Utilities;
+using UnityEngine;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace UmbrellaBoard
 {
     internal class Config
     {
-        public string communitiesDiscoveryURL = "file://S:\\Program Files (x86)\\Steam\\steamapps\\common\\Beat Saber\\UserData\\UmbrellaBoard\\communities.json";
+        public string communitiesDiscoveryURL { get => $"file://{UnityGame.UserDataPath}\\UmbrellaBoard\\communities.json"; }
 
         [UseConverter(typeof(ListConverter<Community>))]
         public List<Community> enabledCommunities = new();
