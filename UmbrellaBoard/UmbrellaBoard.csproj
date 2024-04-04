@@ -169,6 +169,7 @@
     <EmbeddedResource Include="Assets\CommunityConfigurationCell.bsml" />
     <EmbeddedResource Include="Assets\CommunityConfigurationView.bsml" />
     <EmbeddedResource Include="Assets\CommunityCell.bsml" />
+    <EmbeddedResource Include="Assets\UI\CarouselTicker.bsml" />
     <None Include="Directory.Build.props" Condition="Exists('Directory.Build.props')" />
     <None Include="UmbrellaBoard.csproj.user" Condition="Exists('UmbrellaBoard.csproj.user')" />
   </ItemGroup>
