@@ -1,0 +1,7 @@
+<horizontal id='ticker' bg='round-rect-panel' bg-alpha='0.8' vertical-fit='PreferredSize'>
+	<page-button id='prev-button' direction='Left' on-click='previous'/>
+	<stack id='bubble-prefab' pref-width='4' pref-height='4'>
+		<img src='#NoteCircle' preserve-aspect='true'/>
+	</stack>
+	<page-button id='next-button' direction='Right' on-click='next'/>
+</horizontal>

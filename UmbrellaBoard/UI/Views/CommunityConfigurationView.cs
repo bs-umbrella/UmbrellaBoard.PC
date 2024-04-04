@@ -102,27 +102,27 @@ namespace UmbrellaBoard.UI.Views
 
         void EnableCommunity(CommunityConfigurationCell cell)
         {
-            var idx = _config.disabledCommunities.FindIndex(comm => comm.communityName == cell.CommunityName);
+            var idx = _config.DisabledCommunities.FindIndex(comm => comm.communityName == cell.CommunityName);
             if (idx < 0) return; // was not a disabled community
 
             // remove from disabled and add to enabled
-            _config.enabledCommunities.Add(_config.disabledCommunities[idx]);
-            _config.disabledCommunities.RemoveAt(idx);
+            _config.EnabledCommunities.Add(_config.DisabledCommunities[idx]);
+            _config.DisabledCommunities.RemoveAt(idx);
         }
 
         void DisableCommunity(CommunityConfigurationCell cell)
         {
-            var idx = _config.enabledCommunities.FindIndex(comm => comm.communityName == cell.CommunityName);
+            var idx = _config.EnabledCommunities.FindIndex(comm => comm.communityName == cell.CommunityName);
             if (idx < 0) return; // was not an enabled community
 
             // remove from enabled and add to disabled
-            _config.disabledCommunities.Add(_config.enabledCommunities[idx]);
-            _config.enabledCommunities.RemoveAt(idx);
+            _config.DisabledCommunities.Add(_config.EnabledCommunities[idx]);
+            _config.EnabledCommunities.RemoveAt(idx);
         }
         
         void MoveCommunity(CommunityConfigurationCell cell, bool up)
         {
-            var idx = _config.enabledCommunities.FindIndex(comm => comm.communityName == cell.CommunityName);
+            var idx = _config.EnabledCommunities.FindIndex(comm => comm.communityName == cell.CommunityName);
             if (idx < 0) return; // was not an enabled community
 
             if (up)
@@ -130,18 +130,18 @@ namespace UmbrellaBoard.UI.Views
                 if (idx <= 0) return; // was already first
 
                 // swap with idx - 1
-                var other = _config.enabledCommunities[idx - 1];
-                _config.enabledCommunities[idx - 1] = _config.enabledCommunities[idx];
-                _config.enabledCommunities[idx] = other;
+                var other = _config.EnabledCommunities[idx - 1];
+                _config.EnabledCommunities[idx - 1] = _config.EnabledCommunities[idx];
+                _config.EnabledCommunities[idx] = other;
             }
             else
             {
-                if (idx >= _config.enabledCommunities.Count - 1) return; // was already last
+                if (idx >= _config.EnabledCommunities.Count - 1) return; // was already last
                 
                 // swap with idx + 1
-                var other = _config.enabledCommunities[idx + 1];
-                _config.enabledCommunities[idx + 1] = _config.enabledCommunities[idx];
-                _config.enabledCommunities[idx] = other;
+                var other = _config.EnabledCommunities[idx + 1];
+                _config.EnabledCommunities[idx + 1] = _config.EnabledCommunities[idx];
+                _config.EnabledCommunities[idx] = other;
             }
         }
 
@@ -154,7 +154,7 @@ namespace UmbrellaBoard.UI.Views
             public TableView tableView { get; internal set; }
             public Config config { get; internal set; }
             public bool IsEnabledList { get; internal set; }
-            List<Community> Communities => IsEnabledList ? config?.enabledCommunities : config?.disabledCommunities;
+            List<Community> Communities => IsEnabledList ? config?.EnabledCommunities : config?.DisabledCommunities;
 
             public TableCell CellForIdx(TableView tableView, int idx)
             {

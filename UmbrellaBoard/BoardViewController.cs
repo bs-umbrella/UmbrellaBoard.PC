@@ -62,7 +62,7 @@ namespace UmbrellaBoard
         [UIAction("discover-communities")]
         internal void DiscoverCommunities()
         {
-            _communitiesView.RefreshCommunities(_config.communitiesDiscoveryURL);
+            _communitiesView.RefreshCommunities(_config.CommunitiesDiscoveryURL);
             SwitchDisplayedView(_pageView);
         }
 

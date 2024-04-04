@@ -70,13 +70,13 @@ namespace UmbrellaBoard.UI.Tags
             externalComponents.components.Add(elem);
             carousel._carouselLayoutElement = elem;
 
-            BeatSaberMarkupLanguage.BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "UmbrellaBoard.Assets.UI.CarouselTicker.bsml"), carousel.transform.gameObject, carousel);
+            BeatSaberMarkupLanguage.BSMLParser.instance.Parse(BeatSaberMarkupLanguage.Utilities.GetResourceContent(Assembly.GetExecutingAssembly(), "UmbrellaBoard.Assets.CarouselTicker.bsml"), carousel.transform.gameObject, carousel);
 
             carousel._tickerLayoutGroup = carousel._ticker.GetComponent<UnityEngine.UI.HorizontalLayoutGroup>();
             carousel._tickerLayoutElement = carousel._ticker.GetComponent<UnityEngine.UI.LayoutElement>();
             carousel._tickerSizeFitter = carousel._ticker.GetComponent<UnityEngine.UI.ContentSizeFitter>();
 
-            carousel._bubblePrefab.SetActive(false);
+            carousel._bubblePrefab.gameObject.SetActive(false);
 
             carousel._ticker.SetParent(carousel.transform, false);
             carousel.MoveTicker(Carousel.Carousel.CarouselLocation.Default, Carousel.Carousel.CarouselDirection.Horizontal, true);

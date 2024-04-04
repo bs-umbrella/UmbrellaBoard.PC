@@ -47,8 +47,8 @@ namespace UmbrellaBoard.UI.TypeHandlers
             Carousel.Carousel carousel = componentType.component as Carousel.Carousel;
             carousel.SetupAfterChildren();
 
-            componentType.data.TryGetValue("startChildIndex", out string startChildIndex);
-            carousel.SetCurrentlyActiveChildIndex(int.Parse(startChildIndex), false);
+            if (componentType.data.TryGetValue("startChildIndex", out string startChildIndex))
+                carousel.SetCurrentlyActiveChildIndex(int.Parse(startChildIndex), false);
         }
 
 

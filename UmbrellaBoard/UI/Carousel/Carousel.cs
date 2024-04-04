@@ -16,11 +16,12 @@ namespace UmbrellaBoard.UI.Carousel
         internal Button _prevButton;
 
         [UIComponent("bubble-prefab")]
-        internal GameObject _bubblePrefab;
+        internal Transform _bubblePrefab;
 
         internal VerticalLayoutGroup _carouselLayoutGroup;
         internal LayoutElement _carouselLayoutElement;
 
+        [UIComponent("ticker")]
         internal Transform _ticker;
         internal HorizontalLayoutGroup _tickerLayoutGroup;
         internal ContentSizeFitter _tickerSizeFitter;
@@ -33,8 +34,8 @@ namespace UmbrellaBoard.UI.Carousel
         internal RectTransform _viewPort;
         internal HoverDetection _viewPortHoverDetection;
 
-        internal List<CarouselBubble> _carouselBubbles;
-        internal List<CanvasGroup> _carouselCanvasGroups;
+        internal List<CarouselBubble> _carouselBubbles = new();
+        internal List<CanvasGroup> _carouselCanvasGroups = new();
 
         internal event Action<Carousel, int> ActiveChildChanged;
         internal int CurrentChildIndex { get; set; }
@@ -48,25 +49,15 @@ namespace UmbrellaBoard.UI.Carousel
         internal float InactiveAlpha { get; set; }
         private bool TimerPassed
         {
-            get => _timerLength >= 0 && _timer > _timerLength;
+            get => TimerLength >= 0 && _timer > TimerLength;
         }
 
-        private int _currentChildIndex;
         private int _movingDirection;
         private bool _isAnimating;
         private bool _startRealignNextFrame;
 
-
-        private CarouselDirection _carouselDirection;
-        private CarouselLocation _carouselLocation;
-        private CarouselTimerBehaviour _carouselTimerBehaviour;
-        private CarouselAlignment _carouselAlignment;
-        private float _timerLength;
         private float _timer;
-        private bool _showButtons;
-        private bool _pauseOnHover;
         private bool _beingHovered;
-        private float _inactiveAlpha;
 
         public void OnEnable() => _startRealignNextFrame = true;
 
@@ -96,7 +87,7 @@ namespace UmbrellaBoard.UI.Carousel
             for (int i = 0; i < _carouselCanvasGroups.Count; i++)
             {
                 bool isActiveGroup = index == i;
-                _carouselCanvasGroups[i].alpha = isActiveGroup ? 1.0f : _inactiveAlpha;
+                _carouselCanvasGroups[i].alpha = isActiveGroup ? 1.0f : InactiveAlpha;
                 _carouselCanvasGroups[i].interactable = isActiveGroup;
             }
         }
@@ -107,14 +98,14 @@ namespace UmbrellaBoard.UI.Carousel
             if (_isAnimating)
                 return;
 
-            if (!_pauseOnHover || !_beingHovered)
+            if (!PauseOnHover|| !_beingHovered)
                 _timer += Time.deltaTime;
             if (TimerPassed)
                 AdvanceWithTimer();
             if (_startRealignNextFrame)
             {
                 _startRealignNextFrame = false;
-                StartCoroutine(GotoChild(_currentChildIndex, true));
+                StartCoroutine(GotoChild(CurrentChildIndex, true));
             }
         }
 
@@ -129,8 +120,8 @@ namespace UmbrellaBoard.UI.Carousel
         private bool Next(bool animated = true)
         {
             if (_isAnimating) return false;
-            int nextChild = ClampedWithTimerBehaviour(_currentChildIndex + 1);
-            if (nextChild == _currentChildIndex) return false;
+            int nextChild = ClampedWithTimerBehaviour(CurrentChildIndex + 1);
+            if (nextChild == CurrentChildIndex) return false;
 
             StartCoroutine(GotoChild(nextChild, animated));
             return true;
@@ -140,8 +131,8 @@ namespace UmbrellaBoard.UI.Carousel
         {
             if (_isAnimating)
                 return false;
-            int nextChild = ClampedWithTimerBehaviour(_currentChildIndex - 1);
-            if (nextChild == _currentChildIndex)
+            int nextChild = ClampedWithTimerBehaviour(CurrentChildIndex - 1);
+            if (nextChild == CurrentChildIndex)
                 return false;
 
             StartCoroutine(GotoChild(nextChild, animated));
@@ -159,20 +150,20 @@ namespace UmbrellaBoard.UI.Carousel
             _movingDirection = 1;
             _carouselBubbles = new List<CarouselBubble>();
             _carouselCanvasGroups = new List<CanvasGroup>();
-            _timerLength = 5.0f;
-            _inactiveAlpha = 0.2f;
-            _carouselAlignment = CarouselAlignment.Center;
+            TimerLength = 5.0f;
+            InactiveAlpha = 0.2f;
+            Alignment = CarouselAlignment.Center;
         }
 
         internal void SetupAfterChildren()
         {
             int childCount = _content.childCount;
             Transform parent = _bubblePrefab.transform.parent;
-            _bubblePrefab.AddComponent<CarouselBubble>();
+            _bubblePrefab.gameObject.AddComponent<CarouselBubble>();
             
             for (int i = 0; i < childCount; i++)
             {
-                GameObject bubbleGO = Instantiate(_bubblePrefab, parent);
+                GameObject bubbleGO = Instantiate(_bubblePrefab.gameObject, parent);
                 bubbleGO.transform.localScale = new Vector3(.7f, .7f, .7f);
                 CarouselBubble bubble = bubbleGO.GetComponent<CarouselBubble>();
                 _carouselBubbles.Add(bubble);
@@ -185,23 +176,23 @@ namespace UmbrellaBoard.UI.Carousel
             _nextButton.transform.SetAsLastSibling();
 
             UpdateViewport();
-            StartCoroutine(GotoChild(_currentChildIndex, false));
+            StartCoroutine(GotoChild(CurrentChildIndex, false));
         }
 
         private void AdvanceWithTimer()
         {
             int nextChild = 0;
-            switch (_carouselTimerBehaviour)
+            switch (TimerBehaviour)
             {
                 case CarouselTimerBehaviour.None: return; // don't do anything
                 case CarouselTimerBehaviour.LoopForward:
-                    nextChild = ClampedWithTimerBehaviour(_currentChildIndex + 1);
+                    nextChild = ClampedWithTimerBehaviour(CurrentChildIndex + 1);
                     break;
                 case CarouselTimerBehaviour.LoopBackward:
-                    nextChild = ClampedWithTimerBehaviour(_currentChildIndex - 1);
+                    nextChild = ClampedWithTimerBehaviour(CurrentChildIndex - 1);
                     break;
                 case CarouselTimerBehaviour.PingPong:
-                    nextChild = ClampedWithTimerBehaviour(_currentChildIndex + _movingDirection);
+                    nextChild = ClampedWithTimerBehaviour(CurrentChildIndex + _movingDirection);
                     break;
             }
             StartCoroutine(GotoChild(nextChild, true));
@@ -211,11 +202,11 @@ namespace UmbrellaBoard.UI.Carousel
         internal void MoveTicker(CarouselLocation location, CarouselDirection direction, bool force)
         {
             // no movement needed, was already in that place
-            if (!force && location == _carouselLocation && direction == _carouselDirection) return;
+            if (!force && location == Location && direction == Direction) return;
             // carousel layout is the ticker & viewport
             // ticker layout is the ticker itself
 
-            if (force || location != _carouselLocation)
+            if (force || location != Location)
             {
                 switch (location)
                 {
@@ -251,7 +242,7 @@ namespace UmbrellaBoard.UI.Carousel
                 }
             }
 
-            if (force || direction != _carouselDirection)
+            if (force || direction != Direction)
             {
                 switch (direction)
                 {
@@ -265,8 +256,8 @@ namespace UmbrellaBoard.UI.Carousel
             }
 
             // update variables
-            _carouselLocation = location;
-            _carouselDirection = direction;
+            Location = location;
+            Direction = direction;
 
             UpdateViewport();
         }
@@ -274,7 +265,7 @@ namespace UmbrellaBoard.UI.Carousel
 
         void UpdateViewport()
         {
-            switch (_carouselDirection)
+            switch (Direction)
             {
                 case CarouselDirection.Horizontal:
                     // set size to rect width for horizontal
@@ -289,7 +280,7 @@ namespace UmbrellaBoard.UI.Carousel
 
         void SetContentSize(float size)
         {
-            switch (_carouselDirection)
+            switch (Direction)
             {
                 case CarouselDirection.Horizontal:
                     _content.sizeDelta = new Vector2(size, 0);
@@ -371,7 +362,7 @@ namespace UmbrellaBoard.UI.Carousel
 
         int ClampedWithTimerBehaviour(int index)
         {
-            switch (_carouselTimerBehaviour)
+            switch (TimerBehaviour)
             {
                 case CarouselTimerBehaviour.None:
                     {
@@ -397,7 +388,7 @@ namespace UmbrellaBoard.UI.Carousel
                         {
                             // reverse dir
                             _movingDirection = -_movingDirection;
-                            return _currentChildIndex + _movingDirection;
+                            return CurrentChildIndex + _movingDirection;
                         }
                     }
                     break;
@@ -411,7 +402,7 @@ namespace UmbrellaBoard.UI.Carousel
             if (childIndex >= _content.childCount || childIndex < 0) yield return null;
             _isAnimating = true;
 
-            var currentChild = _content.GetChild(_currentChildIndex) as UnityEngine.RectTransform;
+            var currentChild = _content.GetChild(CurrentChildIndex) as UnityEngine.RectTransform;
             var targetChild = _content.GetChild(childIndex) as UnityEngine.RectTransform;
 
             var targetPos = targetChild.anchoredPosition;
@@ -421,7 +412,7 @@ namespace UmbrellaBoard.UI.Carousel
             var currentPos = _content.anchoredPosition;
 
             // setup alignment
-            switch (_carouselAlignment)
+            switch (Alignment)
             {
                 case CarouselAlignment.Beginning:
                     { // to get beginning we have to subtract half the childrect sizes
@@ -446,7 +437,7 @@ namespace UmbrellaBoard.UI.Carousel
             }
 
             // 0 on the non used axis and flip the other
-            switch (_carouselDirection)
+            switch (Direction)
             {
                 case CarouselDirection.Horizontal:
                     {
@@ -463,7 +454,7 @@ namespace UmbrellaBoard.UI.Carousel
             }
 
             SetActiveBubble(childIndex);
-            var oldCanvasGroup = _carouselCanvasGroups[_currentChildIndex];
+            var oldCanvasGroup = _carouselCanvasGroups[CurrentChildIndex];
             var newCanvasGroup = _carouselCanvasGroups[childIndex];
 
             float oldAlpha = oldCanvasGroup.alpha;
@@ -476,16 +467,16 @@ namespace UmbrellaBoard.UI.Carousel
                 {
                     float eased = eased_t(t);
                     _content.anchoredPosition = lerp(currentPos, targetPos, eased);
-                    oldCanvasGroup.alpha = lerp(oldAlpha, _inactiveAlpha, eased);
+                    oldCanvasGroup.alpha = lerp(oldAlpha, InactiveAlpha, eased);
                     newCanvasGroup.alpha = lerp(newAlpha, 1.0f, eased);
                     yield return null;
                 }
             }
 
             _content.anchoredPosition = targetPos;
-            _currentChildIndex = childIndex;
+            CurrentChildIndex = childIndex;
             UpdateButtonsInteractable();
-            SetAlphaToGroups(_currentChildIndex);
+            SetAlphaToGroups(CurrentChildIndex);
 
             _isAnimating = false;
             _timer = 0;
@@ -494,15 +485,15 @@ namespace UmbrellaBoard.UI.Carousel
 
         void UpdateButtonsInteractable()
         {
-            switch (_carouselTimerBehaviour)
+            switch (TimerBehaviour)
             {
                 // pingpong and none should stop advancing beyond bounds
                 case CarouselTimerBehaviour.PingPong:
                 case CarouselTimerBehaviour.None:
                     // if >= count not interactable
-                    _nextButton.interactable = _currentChildIndex >= _content.childCount;
+                    _nextButton.interactable = CurrentChildIndex >= _content.childCount;
                     // if <= 0 not interactable
-                    _prevButton.interactable = _currentChildIndex <= 0;
+                    _prevButton.interactable = CurrentChildIndex <= 0;
                     break;
                 // loop should just allow
                 case CarouselTimerBehaviour.LoopBackward:

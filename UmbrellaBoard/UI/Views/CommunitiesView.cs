@@ -106,7 +106,7 @@ namespace UmbrellaBoard.UI.Views
                 cell.reuseIdentifier = "UmbrellaCommunities";
             }
 
-            var data = _config.enabledCommunities[idx];
+            var data = _config.EnabledCommunities[idx];
             return cell.SetData(data.communityName, data.communityPageURL, data.communityBackgroundURL);
         }
 
@@ -116,23 +116,23 @@ namespace UmbrellaBoard.UI.Views
             foreach (var community in discovery.pcDiscovery)
             {
                 // check if this is already in disabled communities, if so update it
-                var idx = _config.disabledCommunities.FindIndex(x => x.communityName == community.communityName);
+                var idx = _config.DisabledCommunities.FindIndex(x => x.communityName == community.communityName);
                 if (idx >= 0)
                 {
-                    _config.disabledCommunities[idx] = community;
+                    _config.DisabledCommunities[idx] = community;
                     continue;
                 }
 
                 // check if this is already in enabled communities, if so update it
-                idx = _config.enabledCommunities.FindIndex(x => x.communityName == community.communityName);
+                idx = _config.EnabledCommunities.FindIndex(x => x.communityName == community.communityName);
                 if (idx >= 0)
                 {
-                    _config.enabledCommunities[idx] = community;
+                    _config.EnabledCommunities[idx] = community;
                     continue;
                 }
 
                 // this was a new community, add it to enabled!
-                _config.enabledCommunities.Add(community);
+                _config.EnabledCommunities.Add(community);
             }
 
             _tableView.ReloadDataKeepingPosition();
@@ -142,7 +142,7 @@ namespace UmbrellaBoard.UI.Views
         private void HandleCommunitySelected(TableView tableView, int selectedCell)
         {
             _log.Info("handle community was selected");
-            CommunityWasSelected.Invoke(_config.enabledCommunities[selectedCell].communityPageURL);
+            CommunityWasSelected.Invoke(_config.EnabledCommunities[selectedCell].communityPageURL);
 
             foreach (var cell in _tableView.visibleCells)
                 cell.SetSelected(false, SelectableCell.TransitionType.Instant, _tableView, false);
@@ -152,7 +152,7 @@ namespace UmbrellaBoard.UI.Views
 
         public float CellSize() => 12;
 
-        public int NumberOfCells() => _config?.enabledCommunities?.Count ?? 0;
+        public int NumberOfCells() => _config?.EnabledCommunities?.Count ?? 0;
 
         internal struct Discovery
         {

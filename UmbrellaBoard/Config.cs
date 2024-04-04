@@ -10,13 +10,14 @@ namespace UmbrellaBoard
 {
     internal class Config
     {
-        public string communitiesDiscoveryURL { get => $"file://{UnityGame.UserDataPath}\\UmbrellaBoard\\communities.json"; }
+        // TODO: update default value to point at our repo
+        public virtual string CommunitiesDiscoveryURL { get; set; } = $"file://{UnityGame.UserDataPath}\\UmbrellaBoard\\communities.json";
 
         [UseConverter(typeof(ListConverter<Community>))]
-        public List<Community> enabledCommunities = new();
+        public virtual List<Community> EnabledCommunities { get; set; } = new();
 
         [UseConverter(typeof(ListConverter<Community>))]
-        public List<Community> disabledCommunities = new();
+        public virtual List<Community> DisabledCommunities { get; set; } = new();
     }
 
     struct Community
