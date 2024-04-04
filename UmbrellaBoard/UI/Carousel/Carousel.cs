@@ -534,8 +534,8 @@ namespace UmbrellaBoard.UI.Carousel
                 // pingpong and none should stop advancing beyond bounds
                 case CarouselTimerBehaviour.PingPong:
                 case CarouselTimerBehaviour.None:
-                    // if child index smaller than count, interactable
-                    _nextButton.interactable = CurrentChildIndex < _content.childCount;
+                    // if child index smaller than count - 1, interactable
+                    _nextButton.interactable = CurrentChildIndex < (_content.childCount - 1);
                     // if child index greater than 0 (and we have at least 1 child), interactable
                     _prevButton.interactable = CurrentChildIndex > 0 && _content.childCount > 0;
                     break;
