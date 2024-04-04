@@ -192,15 +192,14 @@ namespace UmbrellaBoard.UI.Views
                 CommunityName = communityName;
                 CommunityURL = communityURL;
                 
-                if (SpriteCache.GetSpriteFromCache(backgroundURL) is Sprite sprite)
-                {
-                    _communityBackground.sprite = sprite;
-                    return this;
-                }
-                
+                //if (SpriteCache.GetSpriteFromCache(backgroundURL) is Sprite sprite)
+                //{
+                //    _communityBackground.sprite = sprite;
+                //    return this;
+                //}
                 _communityBackground.SetImageAsync(backgroundURL);
-                SpriteCache.AddSpriteToCache(backgroundURL, _communityBackground.sprite);
-                SpriteCache.MaintainSpriteCache();
+                //SpriteCache.AddSpriteToCache(backgroundURL, _communityBackground.sprite);
+                //SpriteCache.MaintainSpriteCache();
                 return this;
             }
 
