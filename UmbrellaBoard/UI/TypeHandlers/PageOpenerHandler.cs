@@ -12,12 +12,13 @@ using UnityEngine.UI;
 
 namespace UmbrellaBoard.UI.TypeHandlers
 {
+    [ComponentHandler(typeof(PageOpener))]
     internal class PageOpenerHandler : TypeHandler<PageOpener>
     {
         public override Dictionary<string, Action<PageOpener, string>> Setters => new()
         {
-            { "page", (component, value) => component.page = value },
-            { "openInBrowser", (component, value) => component.openInBrowser = bool.Parse(value) }
+            { "page", (component, value) => component.Page = value },
+            { "openInBrowser", (component, value) => component.OpenInBrowser = bool.Parse(value) }
         };
 
         public override Dictionary<string, string[]> Props => new()
@@ -28,9 +29,8 @@ namespace UmbrellaBoard.UI.TypeHandlers
 
         public override void HandleType(BSMLParser.ComponentTypeWithData componentType, BSMLParserParams parserParams)
         {
-            PageOpener pageOpener = componentType.component as PageOpener;
-            Component activationSource = pageOpener.activationSource;
-            pageOpener.host = parserParams.host;
+            var pageOpener = componentType.component as PageOpener;
+            var activationSource = pageOpener.ActivationSource;
 
             if (activationSource != null)
             {
@@ -40,7 +40,15 @@ namespace UmbrellaBoard.UI.TypeHandlers
                     clickableImage.OnClickEvent += (_) => pageOpener.OpenPage();
                 if (activationSource is Button button)
                     button.onClick.AddListener(pageOpener.OpenPage);
-            }
+            } 
+
+            pageOpener.OpenPageEvent += delegate (string page)
+            {
+                if (!parserParams.actions.TryGetValue("open-page", out BSMLAction openPageAction))
+                    throw new Exception($"open-page action not found");
+
+                openPageAction.Invoke(page);
+            };
 
             base.HandleType(componentType, parserParams);
         }

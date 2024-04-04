@@ -3,6 +3,7 @@ using BeatSaberMarkupLanguage.Tags;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,15 +11,22 @@ using UnityEngine.UI;
 
 namespace UmbrellaBoard.UI.Tags
 {
-    
+    static class AddPageOpenerUtil
+    {
+        public static void AddPageOpener<T>(this GameObject go) where T : Component
+        {
+            var opener = go.AddComponent<PageOpener>();
+            opener.ActivationSource = go.GetComponent<T>();
+        }
+    }
+
     internal class OpenPageClickableText : ClickableTextTag
     {
         public override string[] Aliases => new string[] { "open-page-text" };
         public override GameObject CreateObject(Transform parent)
         {
-            GameObject go = base.CreateObject(parent);
-            PageOpener opener = go.AddComponent<PageOpener>();
-            opener.activationSource = go.GetComponent<ClickableText>();
+            var go = base.CreateObject(parent);
+            go.AddPageOpener<ClickableText>();
             return go;
         }
     }
@@ -28,9 +36,8 @@ namespace UmbrellaBoard.UI.Tags
         public override string[] Aliases => new string[] { "open-page-image", "open-page-img" };
         public override GameObject CreateObject(Transform parent)
         {
-            GameObject go = base.CreateObject(parent);
-            PageOpener opener = go.AddComponent<PageOpener>();
-            opener.activationSource = go.GetComponent<ClickableImage>();
+            var go = base.CreateObject(parent);
+            go.AddPageOpener<ClickableImage>();
             return go;
         }
     }
@@ -40,9 +47,8 @@ namespace UmbrellaBoard.UI.Tags
         public override string[] Aliases => new string[] { "open-page-button" };
         public override GameObject CreateObject(Transform parent)
         {
-            GameObject go = base.CreateObject(parent);
-            PageOpener opener = go.AddComponent<PageOpener>();
-            opener.activationSource = go.GetComponent<Button>();
+            var go = base.CreateObject(parent);
+            go.AddPageOpener<Button>();
             return go;
         }
     }
@@ -52,9 +58,8 @@ namespace UmbrellaBoard.UI.Tags
         public override string[] Aliases => new string[] { "open-page-action-button" };
         public override GameObject CreateObject(Transform parent)
         {
-            GameObject go = base.CreateObject(parent);
-            PageOpener opener = go.AddComponent<PageOpener>();
-            opener.activationSource = go.GetComponent<Button>();
+            var go = base.CreateObject(parent);
+            go.AddPageOpener<Button>();
             return go;
         }
     }
@@ -64,9 +69,8 @@ namespace UmbrellaBoard.UI.Tags
         public override string[] Aliases => new string[] { "open-page-page-button" };
         public override GameObject CreateObject(Transform parent)
         {
-            GameObject go = base.CreateObject(parent);
-            PageOpener opener = go.AddComponent<PageOpener>();
-            opener.activationSource = go.GetComponent<Button>();
+            var go = base.CreateObject(parent);
+            go.AddPageOpener<Button>();
             return go;
         }
     }

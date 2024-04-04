@@ -1,26 +1,24 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace UmbrellaBoard.UI
 {
     internal class PageOpener : MonoBehaviour
     {
-        internal string page;
-        internal object host;
-        internal Component activationSource;
-        internal bool openInBrowser;
+        public string Page { get; set; }
+        public Component ActivationSource { get; internal set; }
+        public bool OpenInBrowser { get; set; }
+        public event Action<string> OpenPageEvent;
 
         internal void OpenPage()
         {
-            if (host == null || page == null)
-                return;
+            if (String.IsNullOrEmpty(Page)) return;
 
-            if (openInBrowser)
-                Application.OpenURL(page);
-
-            //else
-            // port this, reflection or something
-            // https://github.com/bs-umbrella/UmbrellaBoard.Quest/blob/main/src/UI/PageOpener.cpp#L16-L17
+            if (OpenInBrowser)
+                Application.OpenURL(Page);
+            else
+                OpenPageEvent?.Invoke(Page);
         }
     }
 }

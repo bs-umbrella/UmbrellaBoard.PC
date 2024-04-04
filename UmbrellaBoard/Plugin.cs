@@ -7,6 +7,7 @@ using UmbrellaBoard.UI.Tags;
 
 using IPA.Config.Stores;
 using Zenject;
+using UmbrellaBoard.UI.TypeHandlers;
 
 namespace UmbrellaBoard
 {
@@ -26,6 +27,9 @@ namespace UmbrellaBoard
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPageClickableText());
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPagePageButtonTag());
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPagePrimaryButtonTag());
+            
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTypeHandler(new PageOpenerHandler());
+            BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTypeHandler(new CarouselHandler());
 
             zenjector.UseLogger(logger);
             zenjector.Install<MenuInstaller>(Location.Menu);

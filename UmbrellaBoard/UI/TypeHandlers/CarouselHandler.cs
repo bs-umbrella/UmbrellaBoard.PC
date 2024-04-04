@@ -8,6 +8,7 @@ using static UmbrellaBoard.UI.Carousel.Carousel;
 
 namespace UmbrellaBoard.UI.TypeHandlers
 {
+    [ComponentHandler(typeof(Carousel.Carousel))]
     internal class CarouselHandler : TypeHandler<Carousel.Carousel>
     {
         public override Dictionary<string, Action<Carousel.Carousel, string>> Setters => new()
