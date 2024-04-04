@@ -197,9 +197,9 @@ namespace UmbrellaBoard.UI.Carousel
 
         internal void Setup()
         {
-            _movingDirection = 1;
-            _carouselBubbles = new List<CarouselBubble>();
-            _carouselCanvasGroups = new List<CanvasGroup>();
+            _viewPortHoverDetection = _viewPort.gameObject.AddComponent<HoverDetection>();
+            _viewPortHoverDetection.Enter += OnPointerEnterViewport;
+            _viewPortHoverDetection.Exit += OnPointerExitViewport;
         }
 
         internal void SetupAfterChildren()
