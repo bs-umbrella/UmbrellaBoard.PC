@@ -20,7 +20,7 @@ namespace UmbrellaBoard
         private Transform _errorContent;
         private GameObject ErrorContent => _errorContent.gameObject;
         
-        [UIComponent("_errorText")] 
+        [UIComponent("error-text")] 
         private TextMeshProUGUI _errorText;
 
         private void Awake()

@@ -4,7 +4,6 @@ using IPAConfig = IPA.Config.Config;
 using SiraUtil.Zenject;
 using UmbrellaBoard.Installers;
 using UmbrellaBoard.UI.Tags;
-
 using IPA.Config.Stores;
 using Zenject;
 using UmbrellaBoard.UI.TypeHandlers;
@@ -27,7 +26,7 @@ namespace UmbrellaBoard
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPageClickableText());
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPagePageButtonTag());
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTag(new OpenPagePrimaryButtonTag());
-            
+
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTypeHandler(new PageOpenerHandler());
             BeatSaberMarkupLanguage.BSMLParser.instance.RegisterTypeHandler(new CarouselHandler());
 

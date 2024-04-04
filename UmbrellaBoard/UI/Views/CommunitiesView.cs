@@ -9,7 +9,6 @@ using BeatSaberMarkupLanguage;
 using System.Reflection;
 using System.Threading.Tasks;
 using SiraUtil.Logging;
-using System.Security.Cryptography;
 using TMPro;
 using UnityEngine.UI;
 
@@ -69,35 +68,31 @@ namespace UmbrellaBoard.UI.Views
         {
             if (!_bsmlReady) return;
 
-            if (_refreshCommunitiesTask != null)
+            if (_refreshCommunitiesTask == null)
+                return;
+
+            if (!_refreshCommunitiesTask.IsCompleted)
             {
-                if (_refreshCommunitiesTask.IsCompleted)
-                {
-                    var response = _refreshCommunitiesTask.Result;
-                    _refreshCommunitiesTask = null;
-
-                    if (response.Valid)
-                    {
-                        ParsedContent.SetActive(true);
-                        _loadingControl.ShowLoading(false);
-                        HandleCommunitiesReceived(response.content);
-                    }
-                    else
-                    {
-                        if (response.httpCode < 200 || response.httpCode >= 300) _loadingControl.ShowError($"Failed to get content, http response: {response.httpCode}");
-                        else if (response.content == null) _loadingControl.ShowError("Failed to get or parse content json");
-                        else _loadingControl.ShowError();
-                    }
-                } 
-                else
-                {
-                    ParsedContent.SetActive(false);
-                    _loadingControl.ShowLoading(true, "Loading Communities...");
-                }
+                ParsedContent.SetActive(false);
+                _loadingControl.ShowLoading(true, "Loading Communities...");
             }
-        }
+            var response = _refreshCommunitiesTask.Result;
+            _refreshCommunitiesTask = null;
 
-        internal void RefreshCommunities(string communitiesURL) => _refreshCommunitiesTask = Task.Run(() => _downloaderUtility.GetJson(_config.communitiesDiscoveryURL, null));
+            if (response.Valid)
+            {
+                ParsedContent.SetActive(true);
+                _loadingControl.ShowLoading(false);
+                HandleCommunitiesReceived(response.content);
+            }
+            else
+            {
+                if (response.httpCode < 200 || response.httpCode >= 300) _loadingControl.ShowError($"Failed to get content, http response: {response.httpCode}");
+                else if (response.content == null) _loadingControl.ShowError("Failed to get or parse content json");
+                else _loadingControl.ShowError();
+            }
+        } 
+        internal void RefreshCommunities(string communitiesURL) => _refreshCommunitiesTask = Task.Run(() => _downloaderUtility.GetJson(communitiesURL, null));
 
         internal void RefreshCommunitiesNoRequest() => _tableView.ReloadDataKeepingPosition();
 
@@ -196,7 +191,15 @@ namespace UmbrellaBoard.UI.Views
             {
                 CommunityName = communityName;
                 CommunityURL = communityURL;
+                
+                //if (SpriteCache.GetSpriteFromCache(backgroundURL) is Sprite sprite)
+                //{
+                //    _communityBackground.sprite = sprite;
+                //    return this;
+                //}
                 _communityBackground.SetImageAsync(backgroundURL);
+                //SpriteCache.AddSpriteToCache(backgroundURL, _communityBackground.sprite);
+                //SpriteCache.MaintainSpriteCache();
                 return this;
             }
 

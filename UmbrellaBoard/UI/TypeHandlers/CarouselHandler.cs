@@ -3,7 +3,6 @@ using BeatSaberMarkupLanguage.Parser;
 using BeatSaberMarkupLanguage.TypeHandlers;
 using System;
 using System.Collections.Generic;
-using UmbrellaBoard.UI.Carousel;
 using static UmbrellaBoard.UI.Carousel.Carousel;
 
 namespace UmbrellaBoard.UI.TypeHandlers
@@ -46,6 +45,7 @@ namespace UmbrellaBoard.UI.TypeHandlers
         {
             base.HandleTypeAfterChildren(componentType, parserParams);
             Carousel.Carousel carousel = componentType.component as Carousel.Carousel;
+            carousel.SetupAfterChildren();
 
             componentType.data.TryGetValue("startChildIndex", out string startChildIndex);
             carousel.SetCurrentlyActiveChildIndex(int.Parse(startChildIndex), false);

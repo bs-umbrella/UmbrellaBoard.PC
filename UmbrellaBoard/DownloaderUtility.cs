@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Policy;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine.Networking;
 
 namespace UmbrellaBoard
@@ -40,22 +38,28 @@ namespace UmbrellaBoard
             }
 
             UnityWebRequest uwr = new UnityWebRequest(new Uri(url), "GET");
-            foreach (var item in headers)
-                uwr.SetRequestHeader(item.Key, item.Value);
+            
+            if (headers != null)
+            {
+                foreach (var item in headers)
+                    uwr.SetRequestHeader(item.Key, item.Value);
+            }
+            
 
             uwr.SendWebRequest();
 
-            while (!uwr.isDone)
+            while (uwr.result == UnityWebRequest.Result.InProgress)
                 Thread.Sleep(10);
-            if (uwr.result != UnityWebRequest.Result.ProtocolError && uwr.result != UnityWebRequest.Result.ConnectionError)
-            {
-                response.httpCode = 200;
-                response.content = uwr.downloadHandler.data;
-            }
-            else
+
+            if (uwr.result == UnityWebRequest.Result.Success)
             {
                 response.httpCode = 404;
                 response.content = null;
+            }
+            else
+            {
+                response.httpCode = 200;
+                response.content = uwr.downloadHandler.data;
             }
 
             return response;

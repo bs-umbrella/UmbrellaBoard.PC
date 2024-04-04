@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+using System;
 using UnityEngine;
 
 namespace UmbrellaBoard.UI
