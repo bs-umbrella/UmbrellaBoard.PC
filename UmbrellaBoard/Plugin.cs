@@ -4,9 +4,7 @@ using IPAConfig = IPA.Config.Config;
 using SiraUtil.Zenject;
 using UmbrellaBoard.Installers;
 using UmbrellaBoard.UI.Tags;
-
 using IPA.Config.Stores;
-using Zenject;
 
 namespace UmbrellaBoard
 {

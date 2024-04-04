@@ -1,5 +1,4 @@
-﻿using System;
-using UmbrellaBoard.AffinityPatches;
+﻿using UmbrellaBoard.AffinityPatches;
 using Zenject;
 
 namespace UmbrellaBoard.Installers

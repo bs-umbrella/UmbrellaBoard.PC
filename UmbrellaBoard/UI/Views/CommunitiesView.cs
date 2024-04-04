@@ -9,7 +9,6 @@ using BeatSaberMarkupLanguage;
 using System.Reflection;
 using System.Threading.Tasks;
 using SiraUtil.Logging;
-using System.Security.Cryptography;
 using TMPro;
 using UnityEngine.UI;
 
