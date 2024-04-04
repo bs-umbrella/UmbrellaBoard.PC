@@ -163,7 +163,7 @@ namespace UmbrellaBoard.UI.Carousel
         private bool NextItem() => Next(true);
 
         [UIAction("previous")]
-        private bool PreviousItem() => Previous();
+        private bool PreviousItem() => Previous(true);
 
         private void Skip() => AdvanceWithTimer();
 
@@ -508,7 +508,7 @@ namespace UmbrellaBoard.UI.Carousel
             // if animated, move it
             if (animated)
             {
-                for (var t = 0.0f; t < 1.0f; t += UnityEngine.Time.deltaTime * 5.0f)
+                for (var t = 0.0f; t < 1.0f; t += Time.deltaTime * 5.0f)
                 {
                     float eased = eased_t(t);
                     _content.anchoredPosition = lerp(currentPos, targetPos, eased);
@@ -525,7 +525,6 @@ namespace UmbrellaBoard.UI.Carousel
 
             _isAnimating = false;
             _timer = 0;
-            yield return null;
         }
 
         void UpdateButtonsInteractable()
@@ -535,10 +534,10 @@ namespace UmbrellaBoard.UI.Carousel
                 // pingpong and none should stop advancing beyond bounds
                 case CarouselTimerBehaviour.PingPong:
                 case CarouselTimerBehaviour.None:
-                    // if >= count not interactable
-                    _nextButton.interactable = CurrentChildIndex >= _content.childCount;
-                    // if <= 0 not interactable
-                    _prevButton.interactable = CurrentChildIndex <= 0;
+                    // if child index smaller than count, interactable
+                    _nextButton.interactable = CurrentChildIndex < _content.childCount;
+                    // if child index greater than 0 (and we have at least 1 child), interactable
+                    _prevButton.interactable = CurrentChildIndex > 0 && _content.childCount > 0;
                     break;
                 // loop should just allow
                 case CarouselTimerBehaviour.LoopBackward:
