@@ -1,16 +1,9 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
-using SiraUtil.Submissions;
-using SiraUtil.Zenject;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Windows.Forms;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static BeatSaberMarkupLanguage.TypeHandlers.PageButtonHandler;
-using static UmbrellaBoard.UI.Carousel.Carousel;
 using Button = UnityEngine.UI.Button;
 
 namespace UmbrellaBoard.UI.Carousel
@@ -53,6 +46,10 @@ namespace UmbrellaBoard.UI.Carousel
         internal bool ShowButtons { get; set; }
         internal bool PauseOnHover { get; set; }
         internal float InactiveAlpha { get; set; }
+        private bool TimerPassed
+        {
+            get => _timerLength >= 0 && _timer > _timerLength;
+        }
 
         private int _currentChildIndex;
         private int _movingDirection;
@@ -71,10 +68,7 @@ namespace UmbrellaBoard.UI.Carousel
         private bool _beingHovered;
         private float _inactiveAlpha;
 
-        public void OnEnable()
-        {
-            _startRealignNextFrame = true;
-        }
+        public void OnEnable() => _startRealignNextFrame = true;
 
         public void OnDestroy()
         {
@@ -85,27 +79,16 @@ namespace UmbrellaBoard.UI.Carousel
             }
         }
 
-        void OnPointerEnterViewport()
-        {
-            SetIsHovered(true);
-        }
+        void OnPointerEnterViewport() => SetIsHovered(true);
 
-        void OnPointerExitViewport()
-        {
-            SetIsHovered(false);
-        }
+        void OnPointerExitViewport() => SetIsHovered(false);
 
-        void SetIsHovered(bool isHovered)
-        {
-            _beingHovered = isHovered;
-        }
+        void SetIsHovered(bool isHovered) => _beingHovered = isHovered;
 
         void SetActiveBubble(int index)
         {
             for (int i = 0; i < _carouselBubbles.Count; i++)
-            {
                 _carouselBubbles[i].Highlighted = index == i;
-            }
         }
 
         void SetAlphaToGroups(int index)
@@ -121,7 +104,18 @@ namespace UmbrellaBoard.UI.Carousel
 
         public void Update()
         {
+            if (_isAnimating)
+                return;
 
+            if (!_pauseOnHover || !_beingHovered)
+                _timer += Time.deltaTime;
+            if (TimerPassed)
+                AdvanceWithTimer();
+            if (_startRealignNextFrame)
+            {
+                _startRealignNextFrame = false;
+                StartCoroutine(GotoChild(_currentChildIndex, true));
+            }
         }
 
         [UIAction("next")]
@@ -144,7 +138,14 @@ namespace UmbrellaBoard.UI.Carousel
 
         private bool Previous(bool animated = true)
         {
-            return false;
+            if (_isAnimating)
+                return false;
+            int nextChild = ClampedWithTimerBehaviour(_currentChildIndex - 1);
+            if (nextChild == _currentChildIndex)
+                return false;
+
+            StartCoroutine(GotoChild(nextChild, animated));
+            return true;
         }
 
         internal void SetCurrentlyActiveChildIndex(int index, bool animated = true)
@@ -157,15 +158,34 @@ namespace UmbrellaBoard.UI.Carousel
         {
             _movingDirection = 1;
             _carouselBubbles = new List<CarouselBubble>();
-            _carouselCanvasGroups = new List<UnityEngine.CanvasGroup>();
+            _carouselCanvasGroups = new List<CanvasGroup>();
             _timerLength = 5.0f;
             _inactiveAlpha = 0.2f;
             _carouselAlignment = CarouselAlignment.Center;
         }
 
-        private void SetupAfterChildren()
+        internal void SetupAfterChildren()
         {
+            int childCount = _content.childCount;
+            Transform parent = _bubblePrefab.transform.parent;
+            _bubblePrefab.AddComponent<CarouselBubble>();
+            
+            for (int i = 0; i < childCount; i++)
+            {
+                GameObject bubbleGO = Instantiate(_bubblePrefab, parent);
+                bubbleGO.transform.localScale = new Vector3(.7f, .7f, .7f);
+                CarouselBubble bubble = bubbleGO.GetComponent<CarouselBubble>();
+                _carouselBubbles.Add(bubble);
 
+                Transform child = _content.GetChild(i);
+                _carouselCanvasGroups.Add(child.gameObject.AddComponent<CanvasGroup>());
+                bubbleGO.SetActive(true);
+            }
+
+            _nextButton.transform.SetAsLastSibling();
+
+            UpdateViewport();
+            StartCoroutine(GotoChild(_currentChildIndex, false));
         }
 
         private void AdvanceWithTimer()
@@ -175,19 +195,13 @@ namespace UmbrellaBoard.UI.Carousel
             {
                 case CarouselTimerBehaviour.None: return; // don't do anything
                 case CarouselTimerBehaviour.LoopForward:
-                    {
-                        nextChild = ClampedWithTimerBehaviour(_currentChildIndex + 1);
-                    }
+                    nextChild = ClampedWithTimerBehaviour(_currentChildIndex + 1);
                     break;
                 case CarouselTimerBehaviour.LoopBackward:
-                    {
-                        nextChild = ClampedWithTimerBehaviour(_currentChildIndex - 1);
-                    }
+                    nextChild = ClampedWithTimerBehaviour(_currentChildIndex - 1);
                     break;
                 case CarouselTimerBehaviour.PingPong:
-                    {
-                        nextChild = ClampedWithTimerBehaviour(_currentChildIndex + _movingDirection);
-                    }
+                    nextChild = ClampedWithTimerBehaviour(_currentChildIndex + _movingDirection);
                     break;
             }
             StartCoroutine(GotoChild(nextChild, true));
@@ -206,46 +220,32 @@ namespace UmbrellaBoard.UI.Carousel
                 switch (location)
                 {
                     case CarouselLocation.Bottom:
-                        {
-                            SetTickerHorizontal();
-                            _ticker.SetAsLastSibling();
-                        }
+                        SetTickerHorizontal();
+                        _ticker.SetAsLastSibling();
                         break;
                     case CarouselLocation.Top:
-                        {
-                            SetTickerHorizontal();
-                            _ticker.SetAsFirstSibling();
-                        }
+                        SetTickerHorizontal();
+                        _ticker.SetAsFirstSibling();
                         break;
                     case CarouselLocation.Left:
-                        {
-                            SetTickerVertical();
-                            _ticker.SetAsFirstSibling();
-                        }
+                        SetTickerVertical();
+                        _ticker.SetAsFirstSibling();
                         break;
                     case CarouselLocation.Right:
-                        {
-                            SetTickerVertical();
-                            _ticker.SetAsFirstSibling();
-                        }
+                        SetTickerVertical();
+                        _ticker.SetAsFirstSibling();
                         break;
                     case CarouselLocation.Default:
+                        switch (direction)
                         {
-                            switch (direction)
-                            {
-                                case CarouselDirection.Horizontal:
-                                    {
-                                        SetTickerHorizontal();
-                                        _ticker.SetAsLastSibling();
-                                    }
-                                    break;
-                                case CarouselDirection.Vertical:
-                                    {
-                                        SetTickerVertical();
-                                        _ticker.SetAsFirstSibling();
-                                    }
-                                    break;
-                            }
+                            case CarouselDirection.Horizontal:
+                                SetTickerHorizontal();
+                                _ticker.SetAsLastSibling();
+                                break;
+                            case CarouselDirection.Vertical:
+                                SetTickerVertical();
+                                _ticker.SetAsFirstSibling();
+                                break;
                         }
                         break;
                 }
@@ -256,14 +256,10 @@ namespace UmbrellaBoard.UI.Carousel
                 switch (direction)
                 {
                     case CarouselDirection.Horizontal:
-                        {
-                            SetContentHorizontal();
-                        }
+                        SetContentHorizontal();
                         break;
                     case CarouselDirection.Vertical:
-                        {
-                            SetContentVertical();
-                        }
+                        SetContentVertical();
                         break;
                 }
             }
@@ -281,16 +277,12 @@ namespace UmbrellaBoard.UI.Carousel
             switch (_carouselDirection)
             {
                 case CarouselDirection.Horizontal:
-                    {
-                        // set size to rect width for horizontal
-                        SetContentSize(_content.rect.width);
-                    }
+                    // set size to rect width for horizontal
+                    SetContentSize(_content.rect.width);
                     break;
                 case CarouselDirection.Vertical:
-                    {
-                        // set size to rect height for vertical
-                        SetContentSize(_content.rect.height);
-                    }
+                    // set size to rect height for vertical
+                    SetContentSize(_content.rect.height);
                     break;
             }
         }
@@ -300,14 +292,10 @@ namespace UmbrellaBoard.UI.Carousel
             switch (_carouselDirection)
             {
                 case CarouselDirection.Horizontal:
-                    {
-                        _content.sizeDelta = new Vector2(size, 0);
-                    }
+                    _content.sizeDelta = new Vector2(size, 0);
                     break;
                 case CarouselDirection.Vertical:
-                    {
-                        _content.sizeDelta = new Vector2(0, size);
-                    }
+                    _content.sizeDelta = new Vector2(0, size);
                     break;
             }
         }
@@ -325,8 +313,8 @@ namespace UmbrellaBoard.UI.Carousel
             _tickerLayoutElement.preferredWidth = 8;
 
             // update fit modes
-            _tickerSizeFitter.verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.Unconstrained;
-            _tickerSizeFitter.horizontalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
+            _tickerSizeFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+            _tickerSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // rotate buttons
             SetButtonDirection(_prevButton, PageButtonDirection.Up);
@@ -509,33 +497,29 @@ namespace UmbrellaBoard.UI.Carousel
             switch (_carouselTimerBehaviour)
             {
                 // pingpong and none should stop advancing beyond bounds
-                case CarouselTimerBehaviour.PingPong: goto case CarouselTimerBehaviour.None;
+                case CarouselTimerBehaviour.PingPong:
                 case CarouselTimerBehaviour.None:
-                    {
-                        // if >= count not interactable
-                        _nextButton.interactable = _currentChildIndex >= _content.childCount;
-                        // if <= 0 not interactable
-                        _prevButton.interactable = _currentChildIndex <= 0;
-                    }
+                    // if >= count not interactable
+                    _nextButton.interactable = _currentChildIndex >= _content.childCount;
+                    // if <= 0 not interactable
+                    _prevButton.interactable = _currentChildIndex <= 0;
                     break;
                 // loop should just allow
-                case CarouselTimerBehaviour.LoopBackward: goto case CarouselTimerBehaviour.LoopForward;
+                case CarouselTimerBehaviour.LoopBackward:
                 case CarouselTimerBehaviour.LoopForward:
-                    {
-                        _nextButton.interactable = true;
-                        _prevButton.interactable = true;
-                    }
+                    _nextButton.interactable = true;
+                    _prevButton.interactable = true;
                     break;
             }
         }
 
-        void SetButtonDirection(UnityEngine.UI.Button pageButton, PageButtonDirection pageButtonDirection)
+        void SetButtonDirection(Button pageButton, PageButtonDirection pageButtonDirection)
         {
             bool isHorizontal = false;
             int angle = 0;
-            var buttonTransform = pageButton.transform.Find("Icon") as UnityEngine.RectTransform;
+            var buttonTransform = pageButton.transform.Find("Icon") as RectTransform;
             buttonTransform.anchoredPosition = new Vector2(0, 0);
-            var layoutElement = pageButton.GetComponent<UnityEngine.UI.LayoutElement>();
+            var layoutElement = pageButton.GetComponent<LayoutElement>();
             switch (pageButtonDirection)
             {
                 case PageButtonDirection.Up:
@@ -555,16 +539,12 @@ namespace UmbrellaBoard.UI.Carousel
                     angle = 90;
                     break;
             }
-            buttonTransform.localRotation = (UnityEngine.Quaternion.Euler(0, 0, angle));
+            buttonTransform.localRotation = Quaternion.Euler(0, 0, angle);
             if (layoutElement.preferredHeight == -1)
-            {
                 layoutElement.preferredHeight = (isHorizontal ? 8 : 8);
-            }
 
             if (layoutElement.preferredHeight == -1)
-            {
                 layoutElement.preferredHeight = (isHorizontal ? 8 : 8);
-            }
         }
 
         private float flip(float t) { return 1.0f - t; }
@@ -573,7 +553,7 @@ namespace UmbrellaBoard.UI.Carousel
         private float ease_out(float t) { return flip(square(flip(t))); }
         private float lerp(float a, float b, float t) { return a + (b - a) * t; }
         private float eased_t(float t) { return lerp(ease_in(t), ease_out(t), t); }
-        private UnityEngine.Vector2 lerp(UnityEngine.Vector2 a, UnityEngine.Vector2 b, float t) { return new UnityEngine.Vector2(lerp(a.x, b.x, t), lerp(a.y, b.y, t)); }
+        private Vector2 lerp(Vector2 a, Vector2 b, float t) { return new Vector2(lerp(a.x, b.x, t), lerp(a.y, b.y, t)); }
 
         internal enum CarouselTimerBehaviour
         {
