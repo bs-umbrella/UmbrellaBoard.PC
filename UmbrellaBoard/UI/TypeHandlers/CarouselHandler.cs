@@ -14,7 +14,7 @@ namespace UmbrellaBoard.UI.TypeHandlers
         {
             { "direction", (component, value) => component.Direction = ParseDirection(value) },
             { "location", (component, value) => component.Location = ParseLocation(value) },
-            { "timerBehavior", (component, value) => component.TimerBehaviour = ParseTimerBehavior(value) },
+            { "timerBehaviour", (component, value) => component.TimerBehaviour = ParseTimerBehavior(value) },
             { "timerLength", (component, value) => component.TimerLength = float.Parse(value) },
             { "contentAlignment", (component, value) => component.Alignment = ParseAlignment(value) },
             { "showButtons", (component, value) => component.ShowButtons = bool.Parse(value) },
@@ -30,7 +30,8 @@ namespace UmbrellaBoard.UI.TypeHandlers
             { "timerBehaviour", new[] { "timer-behaviour"} },
             { "timerLength", new[] { "timer-length"} },
             { "contentAlignment", new[] { "content-alignment" } },
-            { "showButtons", new[] { "pause-on-hover" } },
+            { "showButtons", new[] { "show-buttons" } },
+            { "pauseOnHover", new[] { "pause-on-hover" } },
             { "inactiveAlpha", new[] { "inactive-alpha" } }
         };
 
