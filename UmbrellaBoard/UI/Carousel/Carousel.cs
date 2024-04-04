@@ -38,23 +38,73 @@ namespace UmbrellaBoard.UI.Carousel
         internal List<CanvasGroup> _carouselCanvasGroups = new();
 
         internal event Action<Carousel, int> ActiveChildChanged;
-        internal int CurrentChildIndex { get; set; }
-        internal CarouselDirection Direction { get; set; }
-        internal CarouselLocation Location { get; set; }
-        internal CarouselTimerBehaviour TimerBehaviour { get; set; }
-        internal CarouselAlignment Alignment { get; set; }
-        internal float TimerLength { get; set; }
-        internal bool ShowButtons { get; set; }
-        internal bool PauseOnHover { get; set; }
-        internal float InactiveAlpha { get; set; }
-        private bool TimerPassed
+        private int _currentChildIndex = 0;
+        internal int CurrentChildIndex 
         {
-            get => TimerLength >= 0 && _timer > TimerLength;
+            get => _currentChildIndex;
+            set => SetCurrentlyActiveChildIndex(value, false);
+        }
+        private CarouselDirection _carouselDirection = CarouselDirection.Horizontal;
+        internal CarouselDirection Direction 
+        {
+            get => _carouselDirection;
+            set => MoveTicker(Location, value);
+        } 
+        private CarouselLocation _carouselLocation = CarouselLocation.Default;
+        internal CarouselLocation Location 
+        {
+            get => _carouselLocation;
+            set => MoveTicker(value, Direction);
+        }
+        private CarouselTimerBehaviour _carouselTimerBehaviour = CarouselTimerBehaviour.None;
+        internal CarouselTimerBehaviour TimerBehaviour
+        {
+            get => _carouselTimerBehaviour;
+            set
+            {
+                _carouselTimerBehaviour = value;
+                UpdateButtonsInteractable();
+            }
+        }
+        private CarouselAlignment _carouselAlignment = CarouselAlignment.Center;
+        internal CarouselAlignment Alignment 
+        {
+            get => _carouselAlignment;
+            set
+            {
+                _carouselAlignment = value;
+                StartCoroutine(GotoChild(CurrentChildIndex, false));
+            }
+        }
+        internal float TimerLength { get; set; } = 5.0f;
+        private bool _showButtons = true;
+        internal bool ShowButtons
+        {
+            get => _showButtons;
+            set
+            {
+                _showButtons = value;
+                _nextButton?.gameObject.SetActive(_showButtons);
+                _prevButton?.gameObject.SetActive(_showButtons);
+            }
         }
 
-        private int _movingDirection;
-        private bool _isAnimating;
-        private bool _startRealignNextFrame;
+        internal bool PauseOnHover { get; set; } = false;
+        private float _inactiveAlpha = 0.2f;
+        internal float InactiveAlpha 
+        {
+            get => _inactiveAlpha;
+            set
+            {
+                _inactiveAlpha = value;
+                SetAlphaToGroups(CurrentChildIndex);
+            }
+        }
+        private bool TimerPassed => TimerLength >= 0 && _timer > TimerLength;
+
+        private int _movingDirection = 1;
+        private bool _isAnimating = false;
+        private bool _startRealignNextFrame = true;
 
         private float _timer;
         private bool _beingHovered;
@@ -150,9 +200,6 @@ namespace UmbrellaBoard.UI.Carousel
             _movingDirection = 1;
             _carouselBubbles = new List<CarouselBubble>();
             _carouselCanvasGroups = new List<CanvasGroup>();
-            TimerLength = 5.0f;
-            InactiveAlpha = 0.2f;
-            Alignment = CarouselAlignment.Center;
         }
 
         internal void SetupAfterChildren()
@@ -199,7 +246,7 @@ namespace UmbrellaBoard.UI.Carousel
         }
 
 
-        internal void MoveTicker(CarouselLocation location, CarouselDirection direction, bool force)
+        internal void MoveTicker(CarouselLocation location, CarouselDirection direction, bool force = false)
         {
             // no movement needed, was already in that place
             if (!force && location == Location && direction == Direction) return;
@@ -291,7 +338,6 @@ namespace UmbrellaBoard.UI.Carousel
             }
         }
 
-
         void SetTickerVertical()
         {
             // a vertical ticker means content & ticker are side by side
@@ -308,8 +354,8 @@ namespace UmbrellaBoard.UI.Carousel
             _tickerSizeFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // rotate buttons
-            SetButtonDirection(_prevButton, PageButtonDirection.Up);
-            SetButtonDirection(_nextButton, PageButtonDirection.Down);
+            _prevButton.SetButtonDirection(SetButtonDirectionExtension.PageButtonDirection.Up);
+            _nextButton.SetButtonDirection(SetButtonDirectionExtension.PageButtonDirection.Down);
         }
 
         void SetTickerHorizontal()
@@ -328,8 +374,8 @@ namespace UmbrellaBoard.UI.Carousel
             _tickerSizeFitter.verticalFit = UnityEngine.UI.ContentSizeFitter.FitMode.PreferredSize;
 
             // rotate buttons
-            SetButtonDirection(_prevButton, PageButtonDirection.Left);
-            SetButtonDirection(_nextButton, PageButtonDirection.Right);
+            _prevButton.SetButtonDirection(SetButtonDirectionExtension.PageButtonDirection.Left);
+            _nextButton.SetButtonDirection(SetButtonDirectionExtension.PageButtonDirection.Right);
         }
 
         void SetContentVertical()
@@ -402,8 +448,7 @@ namespace UmbrellaBoard.UI.Carousel
             if (childIndex >= _content.childCount || childIndex < 0) yield return null;
             _isAnimating = true;
 
-            var currentChild = _content.GetChild(CurrentChildIndex) as UnityEngine.RectTransform;
-            var targetChild = _content.GetChild(childIndex) as UnityEngine.RectTransform;
+            var targetChild = _content.GetChild(childIndex) as RectTransform;
 
             var targetPos = targetChild.anchoredPosition;
             var childRect = targetChild.rect;
@@ -474,7 +519,7 @@ namespace UmbrellaBoard.UI.Carousel
             }
 
             _content.anchoredPosition = targetPos;
-            CurrentChildIndex = childIndex;
+            _currentChildIndex = childIndex;
             UpdateButtonsInteractable();
             SetAlphaToGroups(CurrentChildIndex);
 
@@ -503,41 +548,7 @@ namespace UmbrellaBoard.UI.Carousel
                     break;
             }
         }
-
-        void SetButtonDirection(Button pageButton, PageButtonDirection pageButtonDirection)
-        {
-            bool isHorizontal = false;
-            int angle = 0;
-            var buttonTransform = pageButton.transform.Find("Icon") as RectTransform;
-            buttonTransform.anchoredPosition = new Vector2(0, 0);
-            var layoutElement = pageButton.GetComponent<LayoutElement>();
-            switch (pageButtonDirection)
-            {
-                case PageButtonDirection.Up:
-                    isHorizontal = true;
-                    angle = -180;
-                    break;
-                case PageButtonDirection.Down:
-                    isHorizontal = true;
-                    angle = 0;
-                    break;
-                case PageButtonDirection.Left:
-                    isHorizontal = false;
-                    angle = -90;
-                    break;
-                case PageButtonDirection.Right:
-                    isHorizontal = false;
-                    angle = 90;
-                    break;
-            }
-            buttonTransform.localRotation = Quaternion.Euler(0, 0, angle);
-            if (layoutElement.preferredHeight == -1)
-                layoutElement.preferredHeight = (isHorizontal ? 8 : 8);
-
-            if (layoutElement.preferredHeight == -1)
-                layoutElement.preferredHeight = (isHorizontal ? 8 : 8);
-        }
-
+        
         private float flip(float t) { return 1.0f - t; }
         private float square(float t) { return t * t; }
         private float ease_in(float t) { return square(t); }
@@ -577,13 +588,50 @@ namespace UmbrellaBoard.UI.Carousel
             Middle = Center,
             End
         }
+    }
 
+    static internal class SetButtonDirectionExtension
+    {
         internal enum PageButtonDirection
         {
             Up,
             Down,
             Left,
             Right
+        }
+
+        static public void SetButtonDirection(this Button pageButton, PageButtonDirection pageButtonDirection)
+        {
+            bool isHorizontal = false;
+            int angle = 0;
+            var buttonTransform = pageButton.transform.Find("Icon") as RectTransform;
+            buttonTransform.anchoredPosition = new Vector2(0, 0);
+            var layoutElement = pageButton.GetComponent<LayoutElement>();
+            switch (pageButtonDirection)
+            {
+                case PageButtonDirection.Up:
+                    isHorizontal = true;
+                    angle = -180;
+                    break;
+                case PageButtonDirection.Down:
+                    isHorizontal = true;
+                    angle = 0;
+                    break;
+                case PageButtonDirection.Left:
+                    isHorizontal = false;
+                    angle = -90;
+                    break;
+                case PageButtonDirection.Right:
+                    isHorizontal = false;
+                    angle = 90;
+                    break;
+            }
+            buttonTransform.localRotation = Quaternion.Euler(0, 0, angle);
+            if (layoutElement.preferredHeight == -1)
+                layoutElement.preferredHeight = (isHorizontal ? 8 : 8);
+
+            if (layoutElement.preferredHeight == -1)
+                layoutElement.preferredHeight = (isHorizontal ? 8 : 8);
         }
     }
 }
